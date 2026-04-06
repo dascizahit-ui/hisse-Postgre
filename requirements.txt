@@ -1,0 +1,11 @@
+python-telegram-bot[job-queue]>=21.0
+yfinance
+pandas
+ta
+flask
+pytz
+requests
+binpan
+numpy
+g4f
+psycopg2-binary
