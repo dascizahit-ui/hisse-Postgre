@@ -1,0 +1,10 @@
+{
+  "name": "hisse-bot-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd admin-panel && npm install && npm run build",
+    "start": "cd admin-panel && npm start",
+    "postinstall": "cd admin-panel && npm install"
+  }
+}
