@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id      BigInt    @id
+  username     String?
+  created_at   DateTime? @default(now())
+  last_active  DateTime? @default(now())
+
+  bans         Ban?
+  mutes        Mute?
+  alerts       Alert[]
+  portfolio    Portfolio[]
+  watchlist    Watchlist[]
+  settings     UserSettings?
+  subscriptions SignalSubscription[]
+  reported     Report[]  @relation("ReportedUser")
+  reports_made Report[]  @relation("Reporter")
+
+  @@map("users")
+}
+
+model Ban {
+  user_id   BigInt   @id
+  banned_at DateTime @default(now())
+  reason    String?
+  user      User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("bans")
+}
+
+model Mute {
+  user_id    BigInt    @id
+  mute_until DateTime?
+  muted_at   DateTime  @default(now())
+  reason     String?
+  user       User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("mutes")
+}
+
+model Alert {
+  id         Int      @id @default(autoincrement())
+  user_id    BigInt
+  symbol     String
+  price      Float
+  direction  String
+  created_at DateTime @default(now())
+  is_active  Int      @default(1)
+  user       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+model Report {
+  report_id        Int      @id @default(autoincrement())
+  reporter_id      BigInt
+  reported_user_id BigInt
+  message          String
+  timestamp        DateTime @default(now())
+  status           String   @default("pending")
+
+  reporter     User @relation("Reporter", fields: [reporter_id], references: [user_id], onDelete: Cascade)
+  reportedUser User @relation("ReportedUser", fields: [reported_user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("reports")
+}
+
+model Portfolio {
+  id        Int      @id @default(autoincrement())
+  user_id   BigInt
+  symbol    String
+  quantity  Float
+  avg_price Float
+  added_at  DateTime @default(now())
+  user      User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@unique([user_id, symbol])
+  @@map("portfolio")
+}
+
+model Watchlist {
+  user_id     BigInt
+  symbol      String
+  added_price Float?
+  added_date  DateTime? @default(now())
+  user        User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([user_id, symbol])
+  @@map("watchlist")
+}
+
+model UserSettings {
+  user_id               BigInt @id
+  notifications_enabled Int    @default(1)
+  daily_summary_enabled Int    @default(0)
+  preferred_language   String @default("tr")
+  timezone              String @default("Europe/Istanbul")
+  user                  User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model HourlySignal {
+  id              Int      @id @default(autoincrement())
+  symbol          String
+  signal_type     String
+  signal_strength Int
+  price           Float
+  volume          Float
+  rsi             Float
+  macd            Float
+  ema_cross       Boolean
+  bb_position     String
+  created_at      DateTime @default(now())
+  hour_timestamp  DateTime
+
+  @@map("hourly_signals")
+}
+
+model SignalSubscription {
+  user_id       BigInt
+  symbol        String
+  subscribed_at DateTime @default(now())
+  is_active     Int      @default(1)
+  user          User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([user_id, symbol])
+  @@map("signal_subscriptions")
+}
