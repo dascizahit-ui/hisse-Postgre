@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+bot.log
+bot.db
+.env
+.venv/
+env/
+venv/
+node_modules/
+.next/
+admin-panel/node_modules/
+admin-panel/.next/
