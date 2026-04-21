@@ -419,16 +419,21 @@ async def signal_subscribe_command(update: Update, context: ContextTypes.DEFAULT
             return
 
         user_id = update.effective_user.id
+        username = update.effective_user.username
         symbol = context.args[0].upper()
 
         with get_db_connection() as conn:
             c = conn.cursor()
 
-            # Kullanıcıyı users tablosuna ekle
-            c.execute('INSERT INTO users (user_id) VALUES (%s)', (user_id,))
+            # Kullanıcıyı users tablosuna ekle (varsa güncelle)
+            c.execute(
+                'INSERT INTO users (user_id, username) VALUES (%s, %s) '
+                'ON CONFLICT (user_id) DO UPDATE SET username = EXCLUDED.username',
+                (user_id, username)
+            )
 
             # Takip ekle
-            c.execute('''INSERT INTO signal_subscriptions 
+            c.execute('''INSERT INTO signal_subscriptions
                         (user_id, symbol, is_active) VALUES (%s, %s, 1) ON CONFLICT (user_id, symbol) DO UPDATE SET is_active = 1''',
                      (user_id, symbol))
             conn.commit()
@@ -482,7 +487,8 @@ async def signal_list_command(update: Update, context: ContextTypes.DEFAULT_TYPE
 
         message = "🔔 **Takip Ettiğiniz Hisseler:**\n\n"
         for sub in subscriptions:
-            message += f"📊 **{sub[0]}** - {sub[1][:10]}\n"
+            subscribed_at = sub[1].strftime('%Y-%m-%d') if hasattr(sub[1], 'strftime') else str(sub[1])[:10]
+            message += f"📊 **{sub[0]}** - {subscribed_at}\n"
 
         message += f"\n📊 Toplam: {len(subscriptions)} hisse"
         message += "\n\n❓ `/sinyal_durdur HISSE_KODU` ile durdurabilirsiniz."

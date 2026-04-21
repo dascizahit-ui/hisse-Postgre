@@ -1,19 +1,14 @@
 import asyncio
 import logging
 import platform
-from datetime import datetime, time
-from datetime import datetime, time
 from telegram import Update
 from telegram.ext import Application
 from handlers.bb_fisher_scanner import bb_fisher_scan_command
 from handlers.bb_fisher_4h import bb_fisher_4h_command
 from handlers.bb_fisher_weekly import bb_fisher_weekly_command
-from config import TOKEN, TR_TZ
+from config import TOKEN
 from database import init_db
-# Import ekle (en üste)
 from handlers.ultimate_scanner import ultimate_scanner_handler, ultimate_scan_command
-
-# Handler'ları ekle (diğer handler'ların olduğu yere)
 
 from handlers import (
     start_handler,
@@ -33,21 +28,10 @@ from handlers import (
     set_alert_handler,
     my_alerts_handler,
     cancel_alert_handler,
-    portfolio_handler,
-    add_stock_handler,
-    remove_stock_handler,
-    watchlist_handler,
-    addwatch_handler,
-    remove_from_watchlist_handler,
-    notifications_handler,
-    dailysummary_handler,
-    timezone_handler,
     button_callback_handler,
-    get_message_handler
 )
 from handlers.alerts import check_alerts_async
-from handlers.portfolio import send_daily_summary
-from handlers.scanner_handler import scan_command_handler 
+from handlers.scanner_handler import scan_command_handler
 from handlers.stock_scanner import scan_stocks_handler
 from handlers.scanner import scan_command
 from handlers.momentum_scanner import momentum_scan_handler
@@ -125,15 +109,6 @@ async def main():
         application.add_handler(set_alert_handler())
         application.add_handler(my_alerts_handler())
         application.add_handler(cancel_alert_handler())
-        application.add_handler(portfolio_handler())
-        application.add_handler(add_stock_handler())
-        application.add_handler(remove_stock_handler())
-        application.add_handler(watchlist_handler())
-        application.add_handler(addwatch_handler())
-        application.add_handler(remove_from_watchlist_handler())
-        application.add_handler(notifications_handler())
-        application.add_handler(dailysummary_handler())
-        application.add_handler(timezone_handler())
         application.add_handler(volume_handler())
 
         # Saatlik sinyal sistemleri
@@ -145,7 +120,6 @@ async def main():
         application.add_handler(signal_stats_handler())
 
         application.add_handler(button_callback_handler())
-        application.add_handler(get_message_handler())
 
     
         # 1 dk aralıkla alert kontrol
@@ -163,18 +137,6 @@ async def main():
             check_hourly_signals_job,
             interval=3600,
             first=300,
-            data={'application': application}
-        )
-
-        # Günlük özet (saat 09:00)
-        now = datetime.now()
-        daily_time = datetime.combine(now.date(), time(9, 0))
-        daily_time_localized = TR_TZ.localize(daily_time)
-        application.job_queue.run_daily(
-            lambda context: asyncio.create_task(
-                send_daily_summary(context.job.data['application'])
-            ),
-            time=daily_time_localized,
             data={'application': application}
         )
 

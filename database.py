@@ -103,38 +103,6 @@ def init_db():
                     FOREIGN KEY (reported_user_id) REFERENCES users(user_id) ON DELETE CASCADE
                 )''')
 
-                # Portföy tablosu
-                c.execute('''CREATE TABLE IF NOT EXISTS portfolio (
-                    id SERIAL PRIMARY KEY,
-                    user_id BIGINT,
-                    symbol TEXT,
-                    quantity REAL,
-                    avg_price REAL,
-                    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(user_id, symbol),
-                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-                )''')
-
-                # İzleme listesi tablosu
-                c.execute('''CREATE TABLE IF NOT EXISTS watchlist (
-                    user_id BIGINT,
-                    symbol TEXT,
-                    added_price REAL,
-                    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY (user_id, symbol),
-                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-                )''')
-
-                # Kullanıcı ayarları tablosu
-                c.execute('''CREATE TABLE IF NOT EXISTS user_settings (
-                    user_id BIGINT PRIMARY KEY,
-                    notifications_enabled INTEGER DEFAULT 1,
-                    daily_summary_enabled INTEGER DEFAULT 0,
-                    preferred_language TEXT DEFAULT 'tr',
-                    timezone TEXT DEFAULT 'Europe/Istanbul',
-                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-                )''')
-
                 # SAATLİK SİNYALLER TABLOSU
                 c.execute('''CREATE TABLE IF NOT EXISTS hourly_signals (
                     id SERIAL PRIMARY KEY,
@@ -163,8 +131,6 @@ def init_db():
 
                 # İndeksler (IF NOT EXISTS için PostgreSQL'de CREATE INDEX IF NOT EXISTS kullanılır)
                 c.execute('CREATE INDEX IF NOT EXISTS idx_alerts_user_id ON alerts(user_id)')
-                c.execute('CREATE INDEX IF NOT EXISTS idx_portfolio_user_id ON portfolio(user_id)')
-                c.execute('CREATE INDEX IF NOT EXISTS idx_watchlist_user_id ON watchlist(user_id)')
                 c.execute('CREATE INDEX IF NOT EXISTS idx_reports_reporter_id ON reports(reporter_id)')
                 c.execute('CREATE INDEX IF NOT EXISTS idx_reports_reported_user_id ON reports(reported_user_id)')
                 c.execute('CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)')

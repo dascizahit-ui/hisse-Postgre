@@ -71,8 +71,6 @@ async def stock_info(update, context):
         keyboard = [
             [InlineKeyboardButton("📈 Teknik Analiz", callback_data=f"tech_{original_symbol}"),
              InlineKeyboardButton("🔔 Uyarı Ekle", callback_data=f"alert_{original_symbol}")],
-            [InlineKeyboardButton("💼 Portföye Ekle", callback_data=f"portfolio_{original_symbol}"),
-             InlineKeyboardButton("👁️ İzleme Listesi", callback_data=f"watch_{original_symbol}")],
             [InlineKeyboardButton("📊 Temel Analiz", callback_data=f"fund_{original_symbol}")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)

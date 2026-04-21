@@ -259,8 +259,8 @@ async def signal_stats_command(update, context):
             c = conn.cursor()
 
             # Son 24 saatte gönderilen sinyaller
-            c.execute('''SELECT signal_type, COUNT(*) FROM hourly_signals 
-                        WHERE created_at >= datetime('now', '-1 day')
+            c.execute('''SELECT signal_type, COUNT(*) FROM hourly_signals
+                        WHERE created_at >= NOW() - INTERVAL '1 day'
                         GROUP BY signal_type''')
             recent_signals = c.fetchall()
 

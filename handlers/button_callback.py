@@ -1,8 +1,5 @@
 from telegram.ext import CallbackQueryHandler
 from handlers.technical import technical_analysis
-from handlers.alerts import set_alert
-from handlers.portfolio import add_stock
-from handlers.watchlist import addwatch
 from handlers.fundamental import fundamental_analysis
 import logging
 
@@ -20,7 +17,7 @@ async def button_callback(update, context):
             "📊 **Hisse Analizi Komutları:**\n\n"
             "• `/hisse <sembol>` - Temel hisse bilgileri\n"
             "• `/teknik <sembol>` - Detaylı teknik analiz\n"
-            "• `/fundamental <sembol>` - Temel analiz\n"
+            "• `/temel <sembol>` - Temel analiz\n"
             "• `/crossovers` - EMA kesişim sinyalleri\n"
             "**Örnek:** `/hisse THYAO` veya `/teknik BIMAS`"
         )
@@ -34,25 +31,14 @@ async def button_callback(update, context):
             "**Örnek:** `/uyari THYAO 150`"
         )
         await query.edit_message_text(text, parse_mode='Markdown')
-    elif data == "help_portfolio":
+    elif data == "help_signals":
         text = (
-            "💼 **Portföy Komutları:**\n\n"
-            "• `/portfolio` - Portföy özeti\n"
-            "• `/addstock <sembol> <adet> <fiyat>` - Hisse ekle\n"
-            "• `/removestock <sembol>` - Hisse çıkar\n"
-            "• `/watchlist` - İzleme listesi\n"
-            "• `/addwatch <sembol>` - İzleme listesine ekle\n"
-            "• `/removewatch <sembol>` - İzleme listesinden çıkar\n\n"
-            "**Örnek:** `/addstock THYAO 100 145.50`"
-        )
-        await query.edit_message_text(text, parse_mode='Markdown')
-    elif data == "settings":
-        text = (
-            "⚙️ **Ayarlar:**\n\n"
-            "• `/notifications on/off` - Bildirimleri aç/kapat\n"
-            "• `/dailysummary on/off` - Günlük özet\n"
-            "• `/timezone <saat_dilimi>` - Saat dilimi ayarla\n\n"
-            "**Örnek:** `/notifications on`"
+            "📡 **Saatlik Sinyal Komutları:**\n\n"
+            "• `/saatlik <sembol>` - Saatlik sinyal analizi\n"
+            "• `/sinyal_takip <sembol>` - Otomatik bildirim al\n"
+            "• `/sinyal_durdur <sembol>` - Bildirimi durdur\n"
+            "• `/takip_listesi` - Takip ettiklerim\n\n"
+            "**Örnek:** `/sinyal_takip THYAO`"
         )
         await query.edit_message_text(text, parse_mode='Markdown')
     elif data.startswith("tech_"):
@@ -62,13 +48,6 @@ async def button_callback(update, context):
         symbol = data.replace("alert_", "").upper()
         text = f"🔔 **{symbol} için Uyarı Ayarla**\n\nLütfen fiyat belirtin: `/uyari {symbol} <fiyat>`\nÖrnek: `/uyari {symbol} 150`"
         await query.edit_message_text(text, parse_mode='Markdown')
-    elif data.startswith("portfolio_"):
-        symbol = data.replace("portfolio_", "").upper()
-        text = f"💼 **{symbol} Portföye Ekle**\n\nLütfen bilgileri girin: `/addstock {symbol} <adet> <ortalama_fiyat>`\nÖrnek: `/addstock {symbol} 100 145.50`"
-        await query.edit_message_text(text, parse_mode='Markdown')
-    elif data.startswith("watch_"):
-        symbol = data.replace("watch_", "").upper()
-        await addwatch(update, context, symbol=symbol)
     elif data.startswith("fund_"):
         symbol = data.replace("fund_", "").upper()
         await fundamental_analysis(update, context, symbol=symbol)
