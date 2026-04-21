@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 
 async function logoutAction() {
   'use server';
-  cookies().delete('admin_auth');
+  const cookieStore = await cookies();
+  cookieStore.delete('admin_auth');
   redirect('/login');
 }
 

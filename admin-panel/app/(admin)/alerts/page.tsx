@@ -38,10 +38,11 @@ function directionInfo(direction: string) {
   return { text: direction, color: '#9ca3af', icon: TrendingUp };
 }
 
-export default async function AlertsPage({ searchParams }: { searchParams: SearchParams }) {
-  const query = (searchParams.q || '').trim().toUpperCase();
-  const page = Math.max(1, parseInt(searchParams.page || '1', 10) || 1);
-  const status = searchParams.status || 'all';
+export default async function AlertsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const sp = await searchParams;
+  const query = (sp.q || '').trim().toUpperCase();
+  const page = Math.max(1, parseInt(sp.page || '1', 10) || 1);
+  const status = sp.status || 'all';
 
   const where: any = {};
   if (query) where.symbol = { contains: query };
@@ -180,9 +181,9 @@ export default async function AlertsPage({ searchParams }: { searchParams: Searc
 
         {totalPages > 1 && (
           <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', padding: '1rem', alignItems: 'center' }}>
-            <PageLink page={page - 1} disabled={page === 1} label="← Önceki" params={searchParams} />
+            <PageLink page={page - 1} disabled={page === 1} label="← Önceki" params={sp} />
             <span style={{ opacity: 0.6, fontSize: '0.85rem', padding: '0 1rem' }}>Sayfa {page} / {totalPages}</span>
-            <PageLink page={page + 1} disabled={page >= totalPages} label="Sonraki →" params={searchParams} />
+            <PageLink page={page + 1} disabled={page >= totalPages} label="Sonraki →" params={sp} />
           </div>
         )}
       </div>

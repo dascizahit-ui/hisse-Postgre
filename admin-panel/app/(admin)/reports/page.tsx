@@ -37,9 +37,10 @@ async function banReportedUserAction(formData: FormData) {
   }
 }
 
-export default async function ReportsPage({ searchParams }: { searchParams: SearchParams }) {
-  const status = searchParams.status || 'pending';
-  const page = Math.max(1, parseInt(searchParams.page || '1', 10) || 1);
+export default async function ReportsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const sp = await searchParams;
+  const status = sp.status || 'pending';
+  const page = Math.max(1, parseInt(sp.page || '1', 10) || 1);
 
   const where: any = {};
   if (status !== 'all') where.status = status;
@@ -141,9 +142,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
 
         {totalPages > 1 && (
           <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', padding: '1rem', alignItems: 'center', marginTop: '1rem' }}>
-            <PageLink page={page - 1} disabled={page === 1} label="← Önceki" params={searchParams} />
+            <PageLink page={page - 1} disabled={page === 1} label="← Önceki" params={sp} />
             <span style={{ opacity: 0.6, fontSize: '0.85rem', padding: '0 1rem' }}>Sayfa {page} / {totalPages}</span>
-            <PageLink page={page + 1} disabled={page >= totalPages} label="Sonraki →" params={searchParams} />
+            <PageLink page={page + 1} disabled={page >= totalPages} label="Sonraki →" params={sp} />
           </div>
         )}
       </div>

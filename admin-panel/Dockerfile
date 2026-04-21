@@ -5,7 +5,9 @@ RUN apk add --no-cache libc6-compat openssl
 
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma
-RUN npm ci
+# --include=dev: Railway sets NODE_ENV=production which skips dev deps;
+# we need them for the build (typescript, @types, etc.)
+RUN npm ci --include=dev
 
 FROM node:20-alpine AS builder
 WORKDIR /app

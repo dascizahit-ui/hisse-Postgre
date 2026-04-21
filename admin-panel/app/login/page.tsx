@@ -18,7 +18,8 @@ async function loginAction(formData: FormData) {
     redirect('/login?error=wrong-password');
   }
 
-  cookies().set('admin_auth', password, {
+  const cookieStore = await cookies();
+  cookieStore.set('admin_auth', password, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -29,8 +30,11 @@ async function loginAction(formData: FormData) {
   redirect(from);
 }
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string; from?: string } }) {
-  const error = searchParams.error;
+type LoginSearch = { error?: string; from?: string };
+
+export default async function LoginPage({ searchParams }: { searchParams: Promise<LoginSearch> }) {
+  const params = await searchParams;
+  const error = params.error;
   const errorMessage =
     error === 'no-password-set'
       ? 'Sunucuda ADMIN_PASSWORD ayarlanmamış. Lütfen .env dosyasına ekleyin.'
@@ -61,7 +65,7 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
         )}
 
         <form action={loginAction} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <input type="hidden" name="from" value={searchParams.from || '/'} />
+          <input type="hidden" name="from" value={params.from || '/'} />
           <input
             type="password"
             name="password"

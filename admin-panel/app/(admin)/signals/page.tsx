@@ -13,11 +13,12 @@ function signalColor(type: string) {
   return '#9ca3af';
 }
 
-export default async function SignalsPage({ searchParams }: { searchParams: SearchParams }) {
-  const tab = searchParams.tab || 'history';
-  const query = (searchParams.q || '').trim().toUpperCase();
-  const type = searchParams.type || 'all';
-  const page = Math.max(1, parseInt(searchParams.page || '1', 10) || 1);
+export default async function SignalsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const sp = await searchParams;
+  const tab = sp.tab || 'history';
+  const query = (sp.q || '').trim().toUpperCase();
+  const type = sp.type || 'all';
+  const page = Math.max(1, parseInt(sp.page || '1', 10) || 1);
 
   if (tab === 'subscriptions') {
     return <SubscriptionsTab query={query} page={page} />;
@@ -131,9 +132,9 @@ export default async function SignalsPage({ searchParams }: { searchParams: Sear
 
         {totalPages > 1 && (
           <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', padding: '1rem', alignItems: 'center' }}>
-            <PageLink page={page - 1} disabled={page === 1} label="← Önceki" params={searchParams} tab="history" />
+            <PageLink page={page - 1} disabled={page === 1} label="← Önceki" params={sp} tab="history" />
             <span style={{ opacity: 0.6, fontSize: '0.85rem', padding: '0 1rem' }}>Sayfa {page} / {totalPages}</span>
-            <PageLink page={page + 1} disabled={page >= totalPages} label="Sonraki →" params={searchParams} tab="history" />
+            <PageLink page={page + 1} disabled={page >= totalPages} label="Sonraki →" params={sp} tab="history" />
           </div>
         )}
       </div>
