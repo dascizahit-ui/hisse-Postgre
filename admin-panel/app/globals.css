@@ -103,6 +103,7 @@ td {
 
 .status-active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .status-banned { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.status-neutral { background: rgba(156, 163, 175, 0.1); color: #9ca3af; }
 
 button {
   cursor: pointer;
@@ -139,6 +140,22 @@ button {
   background: var(--accent-muted);
   color: var(--accent);
 }
+
+.nav-link {
+  font-size: 0.95rem;
+}
+
+/* Table row hover */
+tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+/* Input focus ring */
+input:focus, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Button hover */
+.btn-primary:hover { filter: brightness(1.1); }
 
 .header-gradient {
     background: linear-gradient(to right, #fff, #9ca3af);
